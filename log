@@ -1,0 +1,4 @@
+get list of all bacteria GenBank accession numbers
+esearch -db nucleotide -query "bacteria[Organism]" | efetch -format acc > bact_genbank_accs.txt
+
+
