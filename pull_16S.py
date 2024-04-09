@@ -49,8 +49,8 @@ def extract_scaffold_headers_from_fasta(fasta_file):
     return scaffold_headers
 
 
-def write_fasta(output_file, retrieved_sequences, file_name, out_type, scaffold_headers):
-    if out_type == "16S":
+def write_fasta(output_file, retrieved_sequences, file_name, out_type, scaffold_headers, target_gene):
+    if out_type == "gene":
         with open(output_file, 'a') as output:
             for name, sequences in retrieved_sequences.items():
                 # Check if there are sequences associated with the scaffold
@@ -58,12 +58,12 @@ def write_fasta(output_file, retrieved_sequences, file_name, out_type, scaffold_
                     # Take the first sequence from the list
                     sequence = sequences[0]
                     original_scaff_header = scaffold_headers.get(name, name)
-                    output.write(f'>{file_name} | {name} | {original_scaff_header}\n{sequence}\n')
+                    output.write(f'>{file_name} | {name} | {target_gene} | {original_scaff_header}\n{sequence}\n')
     elif out_type == "whole":
         with open(output_file, 'a') as output:
             for name, sequence in retrieved_sequences.items():
                 original_scaff_header = scaffold_headers.get(name, name)
-                output.write(f'>{file_name} | {name} | {original_scaff_header}\n{sequence}\n')
+                output.write(f'>{file_name} | {name} | {target_gene} | {original_scaff_header}\n{sequence}\n')
 
 
 
@@ -71,8 +71,15 @@ output_dir = os.path.join(args.working_dir, 'sequence_fastas')
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-output_file_with_coords = os.path.join(output_dir, '16S_sequence.fna')
-output_file_whole = os.path.join(output_dir, '16S_whole_scaffold.fna')
+if args.target_gene == "16S ribosomal RNA":
+    output_file_with_coords = os.path.join(output_dir, '16S_sequence.fna')
+    output_file_whole = os.path.join(output_dir, '16S_whole_scaffold.fna')
+elif args.target_gene == "30S ribosomal protein S3":
+        output_file_with_coords = os.path.join(output_dir, 'rps3_sequence.fna')
+        output_file_whole = os.path.join(output_dir, 'rps3_whole_scaffold.fna')
+elif args.target_gene == "30S ribosomal protein S6":
+        output_file_with_coords = os.path.join(output_dir, 'rps6_sequence.fna')
+        output_file_whole = os.path.join(output_dir, 'rps6_whole_scaffold.fna')
 
 if not os.path.exists(output_file_with_coords):
     open(output_file_with_coords, 'w').close()
@@ -91,5 +98,5 @@ for file_name in get_filenames(args.working_dir):
         sequences_with_coords = extract_sequences_from_fasta_with_coords(fasta_file, scaffold_coords)
         sequences = extract_whole_sequences_from_fasta(fasta_file, scaffold_coords)
 
-        write_fasta(output_file_with_coords, sequences_with_coords, file_name=file_name, out_type="16S", scaffold_headers=scaffold_headers)
-        write_fasta(output_file_whole, sequences, file_name=file_name, out_type="whole", scaffold_headers=scaffold_headers)
+        write_fasta(output_file_with_coords, sequences_with_coords, file_name=file_name, out_type="gene", scaffold_headers=scaffold_headers, target_gene=args.target_gene)
+        write_fasta(output_file_whole, sequences, file_name=file_name, out_type="whole", scaffold_headers=scaffold_headers, target_gene=args.target_gene)
