@@ -88,13 +88,13 @@ def verify_checksums(local_file_path, file_type):
                     print(f"Checksum mismatch for {file_path}")
                     return False
 
-def write_metadata(assembly, genbank_name, gtdb_taxonomy):
+def write_metadata(assembly, genbank_name, lineage):
     if not os.path.exists(tsv_file):
         with open(tsv_file, "w") as f:
-            f.write(f"assembly\tgenbank_name\tgtdb_taxonomy\n{assembly}\t{genbank_name}\t{gtdb_taxonomy}\n")
+            f.write(f"assembly\tgenbank_name\tlineage\n{assembly}\t{genbank_name}\t{lineage}\n")
     else: 
         with open(tsv_file, "a") as f:
-            f.write(f"{assembly}\t{genbank_name}\t{gtdb_taxonomy}\n")
+            f.write(f"{assembly}\t{genbank_name}\t{lineage}\n")
 
 
 class MyFTPHost(ftputil.FTPHost):
@@ -138,6 +138,7 @@ with MyFTPHost(ftp_host, "anonymous", "anonymous@", timeout=60) as ftp:
                             ftp.download("md5checksums.txt", md5_file)
                             file_name_fna = file + "_genomic.fna.gz"
                             file_name_gtf = file + "_genomic.gtf.gz"
+                            file_name_ani = file + "_ani_report.txt"
                             genomic_fna_check = 0
                             genomic_gtf_check = 0
                             # Download genomic.gtf.gz
@@ -153,6 +154,11 @@ with MyFTPHost(ftp_host, "anonymous", "anonymous@", timeout=60) as ftp:
                                         ftp.download_if_newer(file_name_fna, local_path_fna)
                                         genomic_fna_check += 1
                                         write_log_file(log_type="success", file_name=file_name_fna)
+                                    # Download ani_report.txt
+                                    if file_name_ani in ftp.listdir(ftp.curdir) and read_log_file(log_type="success"):
+                                        local_path_ani = os.path.join(local_dir, file_name_ani)
+                                        ftp.download_if_newer(file_name_ani, local_path_ani)
+                                        
                                         
                                 else:
                                     print(f"{file} has no gtf file")
@@ -168,7 +174,7 @@ with MyFTPHost(ftp_host, "anonymous", "anonymous@", timeout=60) as ftp:
                                 print(f"{file} Files Downloaded")
                                 if verify_checksums(local_path_gtf, file + "_genomic.gtf.gz") and verify_checksums(local_path_fna, file + "_genomic.fna.gz"):                            
                                     write_log_file(log_type="subdir_dl", file_name=file)
-                                    write_metadata(assembly=file, genbank_name=item, gtdb_taxonomy="")
+                                    write_metadata(assembly=file, genbank_name=item, lineage="")
                                     item_check += 1
                                     ftp.chdir(ftp_dir + item + "/latest_assembly_versions")
                                 else:
