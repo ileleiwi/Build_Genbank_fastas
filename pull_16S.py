@@ -67,7 +67,7 @@ def write_fasta(output_file, retrieved_sequences, file_name, out_type, scaffold_
 
 
 
-output_dir = os.path.join(args.working_dir, 'sequence_fastas')
+output_dir = os.path.join(args.working_dir, 'working_sequence_fastas')
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 

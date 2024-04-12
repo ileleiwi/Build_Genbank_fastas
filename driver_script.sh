@@ -6,6 +6,11 @@ THREADS=$2
 #build metadata file
 echo -e "assembly\tgenbank_name\tlineage" > genbank_assembly_metadata.tsv
 
+#build sequence files
+mkdir "$DOWNLOAD_DIR"/sequence_fastas/
+touch "$DOWNLOAD_DIR"/sequence_fastas/16S_sequence.fna "$DOWNLOAD_DIR"/sequence_fastas/16S_whole_scaffold.fna "$DOWNLOAD_DIR"/sequence_fastas/rps3_sequence.fna "$DOWNLOAD_DIR"/sequence_fastas/rps6_sequence.fna "$DOWNLOAD_DIR"/sequence_fastas/rps3_whole_scaffold.fna "$DOWNLOAD_DIR"/sequence_fastas/rps6_whole_scaffold.fna
+
+
 #downlaod fasta and gtf files
 python download_data.py "$DOWNLOAD_DIR"
 
