@@ -31,7 +31,7 @@ success_log = local_dir +  "/progress.log"
 md5_file = local_dir + "/md5checksums.txt"
 
 # TSV file
-tsv_file = local_dir + "/genbank_assembly_metatdata.tsv"
+tsv_file = local_dir + "/working_genbank_assembly_metatdata.tsv"
 
 def read_log_file(log_type):
     if log_type == "genome":
